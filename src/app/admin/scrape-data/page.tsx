@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrapingQueue } from "@/components/admin/scraping-queue";
 import { apiClient } from "@/lib/api-client";
 import { ADMIN_API_ROUTES } from "@/utils";
 import {
@@ -31,11 +32,14 @@ const ScrapeData = () => {
   };
 
   const startScraping = async () => {
-    await apiClient.post(ADMIN_API_ROUTES.CREATE_JOB)
+    await apiClient.post(ADMIN_API_ROUTES.CREATE_JOB, {
+      url:`https://packages.yatra.com/holidays/intl/search.htm?destination=${selectedCity}`,
+      jobType:{type:"location"}
+    })
   };
 
   return (
-    <section className="m-10 grid grid-col-3 gap-5">
+    <section className="m-10 grid grid-cols-3 gap-5">
       <Card className="col-span-2">
         <CardBody>
           <Tabs>
@@ -72,6 +76,7 @@ const ScrapeData = () => {
           </Button>
         </CardFooter>
       </Card>
+      <ScrapingQueue/>
     </section>
   );
 };

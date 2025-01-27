@@ -7,7 +7,7 @@ export async function POST(request:Request){
         const response = await prisma.jobs.create({data:{url,jobType}})
         
         return NextResponse.json({jobCreated:true}, {status:201});
-        
+
     } catch (error) {
         return NextResponse.json({message:"An unexpected error occured."}, {status:500})
     }

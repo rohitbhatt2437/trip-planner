@@ -15,13 +15,15 @@ import {
   Tabs,
 } from "@heroui/react";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { CurrentlyScrapingTable } from "./components/currentlyScraping-table";
 
 const ScrapeData = () => {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState<undefined | string>(
     undefined
   );
+  const [jobs, setJobs] = useState([])
 
   const searchCities = async (searchString: string) => {
     const response = await axios.get(
@@ -32,11 +34,24 @@ const ScrapeData = () => {
   };
 
   const startScraping = async () => {
-    await apiClient.post(ADMIN_API_ROUTES.CREATE_JOB, {
+    await axios.post(ADMIN_API_ROUTES.CREATE_JOB, {
       url:`https://packages.yatra.com/holidays/intl/search.htm?destination=${selectedCity}`,
       jobType:{type:"location"}
     })
   };
+
+  useEffect(()=>{
+          const getData = async ()=>{
+              const data = await axios.get(ADMIN_API_ROUTES.JOB_DETAILS);
+              setJobs(data.data.jobs)
+          }
+  
+          const interval = setInterval(()=>getData(),3000 )
+  
+          return ()=>{
+              clearInterval(interval)
+          }
+      }, [])
 
   return (
     <section className="m-10 grid grid-cols-3 gap-5">
@@ -77,6 +92,9 @@ const ScrapeData = () => {
         </CardFooter>
       </Card>
       <ScrapingQueue/>
+      <div className="col-span-3" >
+        <CurrentlyScrapingTable jobs={jobs} />
+      </div>
     </section>
   );
 };
